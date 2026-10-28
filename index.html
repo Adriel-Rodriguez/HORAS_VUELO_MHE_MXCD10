@@ -450,6 +450,23 @@ table.hrs .dmov{display:none}
   .plegable .plBtn{display:flex;width:100%;margin-top:12px}
   .plegable.plegado>*:not(.plHead):not(.plBtn){display:none!important}
 }
+
+/* tarjeta de operador */
+.opc .oh{display:flex;align-items:flex-start;gap:10px}
+.opc .on{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}.opc .on b{font-size:16px;line-height:1.25}
+.opc .oa{display:flex;gap:6px;flex:none}
+.btn.ico{width:36px;padding:0;min-height:36px}
+.btn.del svg,.btn.ico svg{display:block}
+.opc .l.mu{margin-top:6px;line-height:1.4}
+.mot-er{margin-top:8px;font-size:13px;font-weight:700;color:#B3172A;background:#FDE7E9;border-radius:6px;padding:6px 10px;display:inline-block}
+.it .eqs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.eqb{display:inline-flex;flex-direction:column;gap:3px;background:#FFF5EE;border:1px solid #FFD9C2;border-radius:6px;padding:6px 10px;min-width:150px;flex:0 1 auto}
+.eqb .en{font-size:13px;font-weight:800;color:#A84300}.eqb .en em{font-style:normal;font-weight:700;opacity:.8}
+.eqb .ev{font-size:12px;color:rgba(0,0,0,.65)}.eqb .ev b{color:rgba(0,0,0,.85)}
+.eqb .barra{margin-top:2px;height:5px;background:rgba(168,67,0,.12)}.eqb .barra i{background:#FF7733}.eqb .barra i.full{background:var(--ok)}
+@media(max-width:640px){.eqb{flex:1 1 calc(50% - 6px);min-width:0}}
+:root[data-theme="dark"] .eqb{background:rgba(255,119,51,.1);border-color:rgba(255,119,51,.3)}:root[data-theme="dark"] .eqb .en{color:#FFB38A}:root[data-theme="dark"] .eqb .ev{color:#C9CBE6}:root[data-theme="dark"] .eqb .ev b{color:#ECEDF7}:root[data-theme="dark"] .mot-er{background:rgba(242,61,79,.15);color:#FF9AA5}
+:root[data-theme="dark"] main .btn.sec{background:rgba(76,141,255,.18)!important;color:#8CB8FF!important}
 /* ===== Modo oscuro (lo activa el HUB con data-theme="dark"; suelto sigue al dispositivo). La barra amarilla se queda igual ===== */
 :root[data-theme="dark"]{--bg:#14152A;--card:#1E2040;--tx:#ECEDF7;--mu:#A9ABC4;--ln:#30335A;--az:#C9CCFF;--az2:#4C8DFF;--sh:none;color-scheme:dark}
 :root[data-theme="dark"] .b-tl{background:transparent;color:#C9CCFF;border-color:#5b62c9}
@@ -2336,6 +2353,7 @@ function bloqueos(o, eq) {   // lo mismo que revisa el servidor antes de aceptar
   return out;
 }
 const avanceDe = (ldap, c) => avanceBackup_(c, DB.horas.filter(h => n(h.ldap) === n(ldap) && h.equipo === c.equipo && h.estatus === EST_H.V), hoy());
+const ICO_DEL = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>';
 function equiposCell(o) {
   const cs = certsDe(o.ldap);
   if (!cs.length) return '<span class="red">Sin certificación</span>';
@@ -2344,7 +2362,7 @@ function equiposCell(o) {
     if (c.estatus === EST_C.T) return `<span class="badge b-ef">${EQ_CORTO[c.equipo]} · Titular</span>`;
     const a = avanceDe(o.ldap, c), pct = Math.min(100, a.horas / a.meta * 100);
     const tit = a.fin ? `Plazo ${fmtF(a.inicio)} – ${fmtF(a.fin)}${a.reinicios ? ' · conteo reiniciado ' + a.reinicios + ' vez/veces' : ''}` : 'Sin fecha de inicio de práctica';
-    return `<span class="badge b-bk" title="${esc(tit)}">${EQ_CORTO[c.equipo]} · Backup ${fmtH(a.horas)}/${a.meta} h${a.fin && !a.completo ? ' · hasta ' + fmtF(a.fin) : ''}</span> <span class="prog" style="width:60px"><i class="${pct >= 100 ? 'full' : ''}" style="width:${pct}%"></i></span>`;
+    return `<span class="eqb" title="${esc(tit)}"><span class="en">${EQ_CORTO[c.equipo]} <em>Backup</em></span><span class="ev"><b>${fmtH(a.horas)}</b> de ${a.meta} h${a.fin && !a.completo ? ' · hasta ' + fmtF(a.fin).slice(0, 5) : ''}</span><span class="barra"><i class="${pct >= 100 ? 'full' : ''}" style="width:${Math.max(pct, 2)}%"></i></span></span>`;
   }).join('<br>');
 }
 function aptitudCell(o) {
@@ -2652,8 +2670,8 @@ function horasTable(rows) {
     <td data-h="Equipo"><span class="dmov">${esc(diaTxt(h.fecha))} · </span>${esc(h.equipo)}</td><td data-h="Horario">${esc(h.inicio)}–${esc(h.fin)}</td><td class="num" data-h="Horas"><b>${fmtH(h.horas)}</b></td>
     <td>${badgeH(h.estatus)}${h.revisadoNombre ? `<span class="mot">${h.estatus === EST_H.R ? 'Lo regresó' : 'Validó'} ${esc(h.revisadoNombre)}</span>` : ''}</td>
     <td class="wrap">${esc(h.comentarios)}${h.motivo ? `<span class="red" style="display:block">↩️ Motivo: ${esc(h.motivo)}</span>` : ''}</td>
-    <td>${puedeEditarHora(h) ? `<button class="btn ${h.estatus === EST_H.R ? '' : 'sec'} sm" data-ed="${esc(h.id)}">${h.estatus === EST_H.R ? 'Corregir' : 'Editar'}</button> <button class="btn del sm" data-del="${esc(h.id)}" title="Borrar">🗑</button>`
-      : isAdmin() ? `<button class="btn del sm" data-del="${esc(h.id)}" title="Borrar">🗑</button>` : ''}</td></tr>`).join('')
+    <td>${puedeEditarHora(h) ? `<button class="btn ${h.estatus === EST_H.R ? '' : 'sec'} sm" data-ed="${esc(h.id)}">${h.estatus === EST_H.R ? 'Corregir' : 'Editar'}</button> <button class="btn del sm" data-del="${esc(h.id)}" title="Borrar" aria-label="Borrar">${ICO_DEL}</button>`
+      : isAdmin() ? `<button class="btn del sm" data-del="${esc(h.id)}" title="Borrar" aria-label="Borrar">${ICO_DEL}</button>` : ''}</td></tr>`).join('')
   || '<tr><td colspan="8" class="empty">Sin registros</td></tr>'}</tbody>`;
 }
 function bindHoraActions(tb) {
@@ -2901,7 +2919,7 @@ function renderHallazgos() {
     if (isSHE() && a.estatus === EST_A.A) mini += `<button class="btn sec sm" data-ez="${esc(a.id)}">Editar</button>`;
     if (esTLyo() && n(a.tl) === n(S.tl) && (a.estatus === EST_A.A || a.estatus === EST_A.R)) act += `<button class="btn" data-at="${esc(a.id)}">Registrar lo que hice</button>`;
     if (supRevisa(a.tl, a.operacion) && a.estatus === EST_A.P) act += `<button class="btn ok" data-ok="${esc(a.id)}">Cerrar hallazgo</button><button class="btn del" data-no="${esc(a.id)}">Regresar al TL</button>`;
-    if (isAdmin()) mini += `<button class="btn del sm" data-dz="${esc(a.id)}" title="Borrar">🗑</button>`;
+    if (isAdmin()) mini += `<button class="btn del sm" data-dz="${esc(a.id)}" title="Borrar" aria-label="Borrar">${ICO_DEL}</button>`;
     return hzCard(a, act, mini); }).join('') || '<div class="vacio">Sin hallazgos con esos filtros.</div>';
   $('#zMas').classList.toggle('hidden', rows.length <= HZ_VER); $('#zMas').textContent = `Ver más (${rows.length - HZ_VER})`;
   $$('[data-at]').forEach(b => b.onclick = () => abrirAccion(b.dataset.at));
@@ -2954,10 +2972,10 @@ function renderOperadores() {
   const vis = rows.filter(o => !b || n(o.ldap + ' ' + o.nombre + ' ' + o.tl + ' ' + tlNom(o.tl)).includes(b));
   $('#oCnt').textContent = '· ' + vis.length;
   $('#tbOp').innerHTML = vis.slice(0, PAG.op).map(o => { const e = o.activo === 'No' ? { k: 'no', txt: 'Baja', mot: [] } : estadoOp(o);
-    return `<div class="it ${e.k === 'er' ? 'er' : e.k === 'wa' ? 'wa' : e.k === 'no' ? 'mu' : 'ok'}"><div class="t"><b>${esc(o.nombre || o.ldap)}</b>${e.k === 'no' ? '<span class="est no">Baja</span>' : `<span class="est ${e.k}">${e.txt}</span>`}<span class="sp"></span>
-      ${isSHE() ? `<button class="btn sec sm" data-eo="${esc(o.id)}">Editar</button>${isAdmin() ? ` <button class="btn del sm" data-do="${esc(o.id)}" title="Borrar">🗑</button>` : ''}` : ''}</div>
+    return `<div class="it opc ${e.k === 'er' ? 'er' : e.k === 'wa' ? 'wa' : e.k === 'no' ? 'mu' : 'ok'}"><div class="oh"><div class="on"><b>${esc(o.nombre || o.ldap)}</b>${e.k === 'no' ? '<span class="est no">Baja</span>' : `<span class="est ${e.k}">${e.txt}</span>`}</div>
+      ${isSHE() ? `<div class="oa"><button class="btn sec sm" data-eo="${esc(o.id)}">Editar</button>${isAdmin() ? `<button class="btn del sm ico" data-do="${esc(o.id)}" title="Borrar" aria-label="Borrar">${ICO_DEL}</button>` : ''}</div>` : ''}</div>
       <div class="l mu">${esc(o.ldap)} · ${o.operacion ? esc(o.operacion) : '<span class="red">sin operación</span>'} · ${turnoTxt(o)}${o.area ? ' · ' + esc(o.area) : ''} · TL ${o.tl ? (tlByLdap(o.tl) ? esc(tlNom(o.tl)) : esc(o.tl) + ' <span class="red">(no está en Team Leaders)</span>') : '<span class="red">sin TL</span>'}</div>
-      ${e.k === 'er' ? `<div class="l" style="font-size:13px">👉 ${e.mot.map(esc).join(' · ')}</div>` : ''}
+      ${e.k === 'er' ? `<div class="mot-er">${e.mot.map(esc).join(' · ')}</div>` : ''}
       <div class="eqs">${equiposCell(o).replace(/<br>/g, ' ')}</div></div>`; }).join('') || '<div class="vacio">Nadie con ese nombre.</div>';
   $('#oMas').classList.toggle('hidden', vis.length <= PAG.op); $('#oMas').textContent = `Ver más (${vis.length - PAG.op})`;
   $$('#tbOp [data-eo]').forEach(b => b.onclick = () => {
