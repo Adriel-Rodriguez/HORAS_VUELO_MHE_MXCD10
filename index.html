@@ -399,6 +399,57 @@ header .mark svg{width:32px;height:32px}
 #navTema .seg button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px}#navTema .seg svg{width:18px;height:18px}
 #navTema+#navCta{border-top:0;margin-top:4px}
 :root[data-theme="dark"] #navCta .btn{background:rgba(76,141,255,.18)!important;color:#8CB8FF!important}
+
+/* listas por partes */
+.pagoff,table.cards tbody tr.pagoff,table.hrs tbody tr.pagoff{display:none!important}
+.pagMas{width:100%;margin-top:10px}
+/* alertas compactas */
+.alc .t{display:flex;align-items:baseline;gap:8px}.alc .t b{flex:1}.alc .ver{color:var(--az2);font-weight:700;font-size:13px}
+.alc .l{font-size:13px;color:var(--mu);margin-top:2px}
+.alc .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.alc .hacer{font-size:13px;margin-top:8px;color:var(--tx)}.alc .hacer b{color:var(--mu);font-weight:700}
+.lista{display:flex;flex-direction:column;gap:8px}
+/* fechas y horas: que nunca se encimen (iPhone) */
+.grid>*{min-width:0}
+input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;width:100%;display:block;box-sizing:border-box;text-align:left;background:var(--card)}
+input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+@media(max-width:640px){
+  .card{padding:16px}
+  main{padding:14px 12px 40px}
+  .sem{gap:8px}.sem button{padding:12px}.sem button .v{font-size:26px}.sem button .d{display:none}
+  #alNiv{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #alNiv button .l{font-size:12px;line-height:1.2}
+  .it{padding:12px 14px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.uno,.grid:has(> label > textarea){grid-template-columns:1fr}
+}
+@media(max-width:380px){.grid{grid-template-columns:1fr}}
+
+table.hrs .dmov{display:none}
+/* historial de horas en tarjetas cortas (celular y tablet) */
+@media(max-width:1099px){
+  table.hrs tbody tr{display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:6px;row-gap:4px;padding:12px 14px!important;border-radius:8px!important}
+  table.hrs td{width:auto!important;padding:0!important}
+  table.hrs td[data-h]::before{content:none!important}
+  table.hrs td:nth-child(2){order:-3;flex:1 1 60%}table.hrs td:nth-child(2) b{font-size:15px}
+  table.hrs td:nth-child(6){order:-2;text-align:right;margin-left:auto}table.hrs td:nth-child(6) .mot{display:none}
+  table.hrs td:nth-child(1),table.hrs td:nth-child(3),table.hrs td:nth-child(4),table.hrs td:nth-child(5){order:-1;font-size:13px;color:var(--mu)}
+  table.hrs td:nth-child(1){flex-basis:100%;height:0;overflow:hidden}
+  table.hrs td:nth-child(1)::after{content:none}
+  table.hrs .dmov{display:inline!important}
+  table.hrs td:nth-child(3)::after,table.hrs td:nth-child(4)::after{content:' ·'}
+  table.hrs td:nth-child(5) b{color:var(--tx)}table.hrs td:nth-child(5)::after{content:' h'}
+  table.hrs td:nth-child(7){flex:1 1 60%;font-size:13px}table.hrs td:nth-child(7):empty{display:none!important}
+  table.hrs td:nth-child(8){margin-left:auto}table.hrs td:nth-child(8):empty{display:none!important}
+  table.hrs td:nth-child(8) .btn{margin-top:4px}
+}
+
+/* formularios de alta plegables */
+.plBtn{display:none}
+@media(max-width:1099px){
+  .plegable .plBtn{display:flex;width:100%;margin-top:12px}
+  .plegable.plegado>*:not(.plHead):not(.plBtn){display:none!important}
+}
 /* ===== Modo oscuro (lo activa el HUB con data-theme="dark"; suelto sigue al dispositivo). La barra amarilla se queda igual ===== */
 :root[data-theme="dark"]{--bg:#14152A;--card:#1E2040;--tx:#ECEDF7;--mu:#A9ABC4;--ln:#30335A;--az:#C9CCFF;--az2:#4C8DFF;--sh:none;color-scheme:dark}
 :root[data-theme="dark"] .b-tl{background:transparent;color:#C9CCFF;border-color:#5b62c9}
@@ -649,7 +700,7 @@ body.locked main,body.locked nav,body.locked #btnPin,body.locked #menuBtn{visibi
     </div>
     <div class="card">
       <h2>Mis cargas recientes</h2>
-      <div class="tw"><table id="tbMis" class="cards"></table></div>
+      <div class="tw"><table id="tbMis" class="cards hrs"></table></div>
     </div>
   </section>
 
@@ -684,7 +735,7 @@ body.locked main,body.locked nav,body.locked #btnPin,body.locked #menuBtn{visibi
     </div>
     <div class="card">
       <h2>Prácticas registradas <span class="muted" id="rTot"></span></h2>
-      <div class="tw"><table id="tbReg" class="cards"></table></div>
+      <div class="tw"><table id="tbReg" class="cards hrs"></table></div>
       <div class="row"><button class="btn sec sm" id="expReg">Descargar Excel (CSV)</button></div>
     </div>
   </section>
@@ -2419,12 +2470,14 @@ function renderAlertas() {
   $('#alListas').innerHTML = NIVELES_AL.filter(([k]) => !AL_NIV || AL_NIV === k).map(([k, t, cl, d]) => {
     const ps = personasAl(rows.filter(a => nivelAl(a.tipo) === k)).sort((x, y) => String(x.nombre || x.ldap).localeCompare(String(y.nombre || y.ldap), 'es'));
     return `<div class="card nivel n${k}"><h2>${t} <span class="muted">· ${ps.length}</span></h2><p class="muted" style="margin:-6px 0 10px">${d}</p>
-      <div class="tw"><table class="cards"><thead><tr><th>Persona</th><th>Qué pasa</th><th>Qué hacer</th></tr></thead><tbody>
-      ${ps.map(p => `<tr class="clk" data-l="${esc(p.ldap)}"><td><b>${esc(p.nombre || p.ldap)}</b><span class="mot">${esc(p.ldap)} · ${esc(p.operacion || '—')} · ${turnoTxt(opByLdap(p.ldap))} · TL ${esc(tlNom(p.tl) || '—')}</span></td>
-        <td class="wrap chipsAl">${p.items.map(a => `<span class="badge b-${a.sev}">${esc(a.tipo)}</span>`).join('')}${p.items.map(a => `<span class="mot">${esc(a.detalle)}</span>`).join('')}</td>
-        <td class="wrap" data-h="Qué hacer">${uniq(p.items.map(a => (AL_INFO[a.tipo] || [0, ''])[1])).map(esc).join('<br>')}</td></tr>`).join('')
-        || '<tr><td colspan="3" class="empty">Nada en este grupo 🎉</td></tr>'}</tbody></table></div></div>`; }).join('');
-  $$('#alListas tr.clk').forEach(e => e.onclick = () => detalle(e.dataset.l));
+      <div class="lista" id="alG${k}" data-pag="${innerWidth <= 640 ? 5 : 8}">${ps.map(p => { const cnt = {}; p.items.forEach(a => { cnt[a.tipo] = cnt[a.tipo] || { n: 0, sev: a.sev }; cnt[a.tipo].n++; });
+        const hacer = uniq(p.items.map(a => (AL_INFO[a.tipo] || [0, ''])[1]).filter(Boolean));
+        return `<div class="it clk alc" data-l="${esc(p.ldap)}"><div class="t"><b>${esc(p.nombre || p.ldap)}</b><span class="ver">Ver ›</span></div>
+          <div class="l">${esc(p.operacion || '—')} · ${turnoTxt(opByLdap(p.ldap))} · TL ${esc(tlNom(p.tl) || '—')}</div>
+          <div class="tags">${Object.entries(cnt).map(([tp, v]) => `<span class="badge b-${v.sev}">${esc(tp)}${v.n > 1 ? ' ×' + v.n : ''}</span>`).join('')}</div>
+          ${hacer.length ? `<div class="hacer"><b>Qué hacer:</b> ${hacer.map(esc).join(' · ')}</div>` : ''}</div>`; }).join('')
+        || '<p class="empty">Nada en este grupo 🎉</p>'}</div></div>`; }).join('');
+  $$('#alListas .it.clk').forEach(e => e.onclick = () => detalle(e.dataset.l));
   const c = C();
   $('#alReglas').textContent = `Reglas (Standard 081-01A, por equipo): horas de práctica Reach 60 h en 2 meses, Order Picker 80 h en 4 meses, Transpaleta eléctrica 20 h en 1 mes, Apilador y Transpaleta y Apilador 20 h en 1 mes (si no se completan, se reinicia el conteo) · backup sin práctica ${c.DIAS_SIN_PRACTICA}+ días (no se avisa si la persona está bloqueada) · licencia y médico anuales · certificación vigente ${c.VIGENCIA_CERT_DIAS} días con aviso ${c.AVISO_CERT_DIAS} días antes · médico no apto y licencia vencida bloquean la carga de horas · reincidencia ${c.REINCIDENCIA_N}+ hallazgos en ${c.REINCIDENCIA_DIAS} días · horas sin validar ${c.DIAS_PEND_VALIDAR}+ días · hallazgo vencido si el TL no actúa antes de la fecha límite.`
     + (isTL() ? ' Ves las alertas de tus operadores.' : isSUP() ? ' Ves las alertas de los TL que supervisas.' : '');
@@ -2470,8 +2523,9 @@ function porValidarSup() {
     ac: DB.auditorias.filter(a => a.estatus === EST_A.P && supRevisa(a.tl, a.operacion)) };
 }
 let RES_EST = '';
-let K_F = 'hv', K_VER = 30;
-const PAG = { res: 30, op: 30, ing: 150, bit: 150 };
+let K_F = 'hv', K_VER = innerWidth <= 640 ? 8 : 20;
+const PAG_M = innerWidth <= 640;
+const PAG = { res: PAG_M ? 12 : 20, op: PAG_M ? 12 : 20, ing: PAG_M ? 30 : 50, bit: PAG_M ? 30 : 50 };
 function verEstado(k) { RES_EST = k; showTab('resumen'); renderResumen(); setTimeout(() => $('#tbResumen').scrollIntoView({ behavior: 'smooth', block: 'start' }), 30); }
 function verAlertas(tipo) { showTab('alertas'); $('#alTipo').value = ''; AL_NIV = 0; renderAlertas(); if (tipo) { $('#alTipo').value = tipo; renderAlertas(); } }
 function pendientesRol() {
@@ -2595,7 +2649,7 @@ function hElegir(ldap, equipo) {
 function horasTable(rows) {
   return `<thead><tr><th>Día</th><th>Operador</th><th>Equipo</th><th>Horario</th><th class="num">Horas</th><th>Estatus</th><th>Comentario</th><th></th></tr></thead><tbody>
   ${rows.map(h => `<tr><td data-h="Día">${diaTxt(h.fecha)}</td><td><b>${esc((opByLdap(h.ldap) || {}).nombre || h.ldap)}</b><span class="mot">Cargó ${esc(tlNom(h.tl))}${h.supervisor && n(quienTxt(h.supervisor)) !== n(tlNom(h.tl)) ? ' · supervisó ' + esc(quienTxt(h.supervisor)) : ''}</span></td>
-    <td data-h="Equipo">${esc(h.equipo)}</td><td data-h="Horario">${esc(h.inicio)}–${esc(h.fin)}</td><td class="num" data-h="Horas"><b>${fmtH(h.horas)}</b></td>
+    <td data-h="Equipo"><span class="dmov">${esc(diaTxt(h.fecha))} · </span>${esc(h.equipo)}</td><td data-h="Horario">${esc(h.inicio)}–${esc(h.fin)}</td><td class="num" data-h="Horas"><b>${fmtH(h.horas)}</b></td>
     <td>${badgeH(h.estatus)}${h.revisadoNombre ? `<span class="mot">${h.estatus === EST_H.R ? 'Lo regresó' : 'Validó'} ${esc(h.revisadoNombre)}</span>` : ''}</td>
     <td class="wrap">${esc(h.comentarios)}${h.motivo ? `<span class="red" style="display:block">↩️ Motivo: ${esc(h.motivo)}</span>` : ''}</td>
     <td>${puedeEditarHora(h) ? `<button class="btn ${h.estatus === EST_H.R ? '' : 'sec'} sm" data-ed="${esc(h.id)}">${h.estatus === EST_H.R ? 'Corregir' : 'Editar'}</button> <button class="btn del sm" data-del="${esc(h.id)}" title="Borrar">🗑</button>`
@@ -3230,7 +3284,7 @@ function renderIngresos() {
   const sel = $('#iRol'), v = sel.value;
   sel.innerHTML = ops.map(([val, t]) => `<option value="${esc(val)}">${t}</option>`).join(''); sel.value = ops.some(o => o[0] === v) ? v : '';
   $('#iChips').innerHTML = ops.length > 2 ? ops.map(([val, t]) => `<button type="button" class="chip ${sel.value === val ? 'on' : ''}" data-r="${esc(val)}">${t}</button>`).join('') : '';
-  $$('#iChips .chip').forEach(c => c.onclick = () => { sel.value = c.dataset.r; PAG.ing = 150; renderIngresos(); });
+  $$('#iChips .chip').forEach(c => c.onclick = () => { sel.value = c.dataset.r; PAG.ing = PAG_M ? 30 : 50; renderIngresos(); });
   const rows = filtrosIngresos();
   $('#iTit').textContent = verIngresosSHE() ? 'Quién entró' : 'TL que entraron';
   $('#iTot').textContent = `· ${rows.length}`;
@@ -3550,16 +3604,16 @@ function bind() {
   $$('#zChips .chip').forEach(c => c.onclick = () => { $('#zEst').value = c.dataset.e; HZ_VER = 30; renderHallazgos(); });
   $('#zMas').onclick = () => { HZ_VER += 30; renderHallazgos(); };
   $$('#acChips .chip').forEach(c => c.onclick = () => { const t = $('#acTxt'); t.value = (t.value ? t.value.replace(/\s*$/, '') + '. ' : '') + c.textContent; t.focus(); });
-  $$('#kChips .chip').forEach(c => c.onclick = () => { K_F = c.dataset.k; K_VER = 30; renderCorrecciones(); });
-  $('#kBus').oninput = () => { K_VER = 30; renderCorrecciones(); }; $('#kMas').onclick = () => { K_VER += 30; renderCorrecciones(); };
+  $$('#kChips .chip').forEach(c => c.onclick = () => { K_F = c.dataset.k; K_VER = innerWidth <= 640 ? 8 : 20; renderCorrecciones(); });
+  $('#kBus').oninput = () => { K_VER = innerWidth <= 640 ? 8 : 20; renderCorrecciones(); }; $('#kMas').onclick = () => { K_VER += innerWidth <= 640 ? 8 : 20; renderCorrecciones(); };
   $('#indMes').onchange = renderIndicadores; $('#indBus').oninput = renderIndicadores;
   $$('#indChips .chip').forEach(c => c.onclick = () => { IND_F = c.dataset.f; renderIndicadores(); });
   $$('#tPuestoSeg button').forEach(b => b.onclick = () => segSet('#tPuestoSeg', '#tPuesto', b.dataset.v));
   $$('#tActSeg button').forEach(b => b.onclick = () => segSet('#tActSeg', '#tActivo', b.dataset.v));
-  ['#iDesde', '#iHasta'].forEach(s => $(s).onchange = renderIngresos); $('#iBus').oninput = () => { PAG.ing = 150; renderIngresos(); }; $('#iMas').onclick = () => { PAG.ing += 150; renderIngresos(); };
-  ['#bDesde', '#bHasta'].forEach(s => $(s).onchange = renderBitacora); $('#bBus').oninput = () => { PAG.bit = 150; renderBitacora(); }; $('#bMas').onclick = () => { PAG.bit += 150; renderBitacora(); };
-  $$('#bChips .chip').forEach(c => c.onclick = () => { $('#bHoja').value = c.dataset.h; PAG.bit = 150; renderBitacora(); });
-  $('#resMas').onclick = () => { PAG.res += 30; renderResumen(); }; $('#oMas').onclick = () => { PAG.op += 30; renderOperadores(); };
+  ['#iDesde', '#iHasta'].forEach(s => $(s).onchange = renderIngresos); $('#iBus').oninput = () => { PAG.ing = PAG_M ? 30 : 50; renderIngresos(); }; $('#iMas').onclick = () => { PAG.ing += PAG_M ? 30 : 50; renderIngresos(); };
+  ['#bDesde', '#bHasta'].forEach(s => $(s).onchange = renderBitacora); $('#bBus').oninput = () => { PAG.bit = PAG_M ? 30 : 50; renderBitacora(); }; $('#bMas').onclick = () => { PAG.bit += PAG_M ? 30 : 50; renderBitacora(); };
+  $$('#bChips .chip').forEach(c => c.onclick = () => { $('#bHoja').value = c.dataset.h; PAG.bit = PAG_M ? 30 : 50; renderBitacora(); });
+  $('#resMas').onclick = () => { PAG.res += PAG_M ? 12 : 20; renderResumen(); }; $('#oMas').onclick = () => { PAG.op += PAG_M ? 12 : 20; renderOperadores(); };
   $('#uBus').oninput = renderUsuarios; $$('#uChips .chip').forEach(c => c.onclick = () => { U_F = c.dataset.f; renderUsuarios(); });
   $('#uPuesto').onchange = uPuestoTxt; $$('#uActSeg button').forEach(b => b.onclick = () => segSet('#uActSeg', '#uActivo', b.dataset.v));
   $('#hIni').oninput = updHoras; $('#hFin').oninput = updHoras; $('#hLdap').onchange = () => hElegir($('#hLdap').value); $('#hEquipo').onchange = () => hEquipos();
@@ -3679,6 +3733,38 @@ function ponTema(t) {
   $$('#temaSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === t));
   const b = $('#btnTema'); if (b) b.title = t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
 }
+
+/* ---------- listas largas: se muestran por partes, con "Ver más" ---------- */
+const LIM = {};
+const pagBase = () => innerWidth <= 640 ? 10 : 25;
+function autoPag(el) {
+  if (!el || !el.id) return;
+  const base = +el.dataset.pag || pagBase(), lim = LIM[el.id] || base;
+  const items = [...el.querySelectorAll(':scope > .it, :scope > .fila, :scope > .grupo, :scope > tbody > tr, :scope > tr')];
+  items.forEach((x, i) => x.classList.toggle('pagoff', i >= lim));
+  el.querySelectorAll(':scope > .dia').forEach(d => { let nx = d.nextElementSibling; d.classList.toggle('pagoff', !nx || nx.classList.contains('pagoff')); });
+  const ancla = el.closest('.tw') || el;
+  let b = ancla.nextElementSibling; if (!b || !b.classList.contains('pagMas')) { b = document.createElement('button'); b.type = 'button'; b.className = 'btn sec pagMas'; ancla.after(b); }
+  const resto = items.length - lim;
+  b.classList.toggle('hidden', resto <= 0);
+  b.textContent = `Ver ${Math.min(resto, base)} más (quedan ${resto})`;
+  b.onclick = () => { LIM[el.id] = lim + base; autoPag(el); };
+}
+function autoPagObs(sel) { const el = $(sel); if (!el || el._pag) return; el._pag = new MutationObserver(() => autoPag(el)); el._pag.observe(el, { childList: true }); autoPag(el); }
+
+/* ---------- formularios de alta: en celular y tablet se abren con un botón ---------- */
+function plegables() {
+  [['#oFormTitle', 'Agregar operador'], ['#tlFormTitle', 'Agregar Team Leader'], ['#uFormTitle', 'Agregar usuario']].forEach(([sel, txt]) => {
+    const t = $(sel); if (!t) return; const card = t.closest('.card'); if (!card || card.classList.contains('plegable')) return;
+    const head = t.parentElement === card ? t : t.parentElement; head.classList.add('plHead');
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn plBtn'; head.after(b);
+    const pinta = () => { const ab = !card.classList.contains('plegado'); b.textContent = ab ? 'Ocultar formulario' : '+ ' + txt; b.classList.toggle('sec', ab); };
+    b.onclick = () => { card.classList.toggle('plegado'); pinta(); if (!card.classList.contains('plegado')) setTimeout(() => { const f = card.querySelector('input:not([type=hidden]):not([readonly])'); if (f && innerWidth > 640) f.focus(); }, 30); };
+    const alta = t.textContent;
+    new MutationObserver(() => { if (t.textContent !== alta) { card.classList.remove('plegado'); pinta(); } else { card.classList.add('plegado'); pinta(); } }).observe(t, { childList: true, characterData: true, subtree: true });
+    card.classList.add('plegable', 'plegado'); pinta();
+  });
+}
 function altoHeader() { const h = document.querySelector('header'); if (h) document.documentElement.style.setProperty('--hh', h.offsetHeight + 'px'); }
 window.addEventListener('resize', altoHeader);
 try { new ResizeObserver(altoHeader).observe(document.querySelector('header')); } catch (e) {}
@@ -3690,6 +3776,9 @@ try { new ResizeObserver(altoHeader).observe(document.querySelector('header')); 
   $$('select.eqs').forEach(sel => sel.innerHTML = `<option value="">${sel.dataset.all}</option>` + EQUIPOS.map(o => `<option>${o}</option>`).join(''));
   bind(); resetUsrForm();
   $$('select').forEach(x => { if (!x.classList.contains('hidden')) pickEnhance(x); });
+  plegables();
+  ['#vLista', '#vaLista', '#tbTlHz', '#tlHzEsp', '#tbTL', '#indLista', '#kLog', '#tbUsr', '#tbRs', '#tbRsLog', '#tbReg', '#tbMis'].forEach(autoPagObs);
+  new MutationObserver(() => $$('#alListas [data-pag]').forEach(autoPag)).observe($('#alListas'), { childList: true });
   let ses = null; try { ses = JSON.parse(sessionStorage.getItem(KEY + '_ses')); } catch (e) {}
   if (ses && ses.rol === 'TL' && ses.tl) {
     ocupado(true); try { await cargarPublico(); setSession(ses); } catch (e) { forzarSalida('No se pudo conectar: ' + e.message); } finally { ocupado(false); }
