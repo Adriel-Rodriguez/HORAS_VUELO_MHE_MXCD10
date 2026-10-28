@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Horas Vuelo · Montacarguistas</title>
+<script>/* apariencia elegida por la persona; por defecto, claro */ (function () { var t = 'light'; try { t = localStorage.getItem('hv_tema') || 'light'; } catch (e) {} document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); })();</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%232D3277'/%3E%3Cg transform='translate(4 3) scale(.75)'%3E%3Crect x='21.5' y='4' width='2.4' height='20' fill='%23FFE600'/%3E%3Crect x='21.5' y='21.6' width='8.5' height='2.2' fill='%23FFE600'/%3E%3Cpath d='M3 15.2h17v7.3H3z' fill='%23FFE600'/%3E%3Cpath d='M6.5 8.5h6.2l3.3 7.2M7.5 8.5v6' stroke='%23FFE600' stroke-width='2.2' fill='none'/%3E%3Ccircle cx='7.5' cy='24.2' r='3.2' fill='%23FFE600'/%3E%3Ccircle cx='16.5' cy='24.2' r='3.2' fill='%23FFE600'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap">
 <style>
@@ -293,20 +295,30 @@ nav .cnt{background:var(--er);color:#FFFFFF;border-radius:999px;padding:1px 8px}
 }
 @media(max-width:760px){
   header{gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px}
-  header .she,header .sub,header .pill,header .mark{display:none!important}
+  header .she,header .sub,header .pill{display:none!important}
+  header .mark{width:38px;height:38px}header .mark svg{width:28px;height:28px}
   header h1{font-size:18px}
   #whoBadge{padding:3px}#whoBadge .wn{display:none}
   #navCta{display:flex}
   .secbar h1{font-size:22px}
 }
 body.locked #btnSwitch{display:none}
-@media(min-width:1100px){
-  body:not(.locked) nav{transform:none;top:var(--hh);width:250px;box-shadow:1px 0 0 var(--ln);z-index:50;padding-top:14px}
-  body:not(.locked) main{margin-left:250px;max-width:none;padding:24px 32px}
-  body:not(.locked) #menuBtn,.navtop{display:none}
-  body.menu #velo{display:none}
+/* menú de hamburguesa: se despliega y se oculta en todos los tamaños */
+nav{overflow-y:auto;scrollbar-width:thin;width:min(300px,86vw);box-shadow:4px 0 24px rgba(0,0,0,.18)}
+nav::-webkit-scrollbar{width:6px}nav::-webkit-scrollbar-thumb{background:rgba(0,0,0,.18);border-radius:6px}
+nav button[data-t]{padding:10px 12px}
+#menuBtn{transition:transform .15s}#menuBtn:hover{transform:scale(1.06)}
+@media(min-width:1100px){main{max-width:1240px;padding:24px 32px}}
+/* entrada: pantalla limpia bajo la barra, sin oscurecer; el paso 1 cabe completo sin desplazar */
+@media(min-width:900px){
+  #gate .box:has(#gStep1:not(.hidden)){max-width:900px}
+  #gStep1 .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  #gStep1 .roles button{flex-direction:column;align-items:flex-start;gap:12px;padding:20px;min-height:0}
+  #gStep1 .roles .ch{display:none}
+  #gStep1 #gGuia{max-width:420px;display:flex;margin:18px auto 0}
+  #gStep1 h2,#gStep1>p.muted:first-of-type{text-align:center}
 }
-/* entrada: pantalla limpia bajo la barra, sin oscurecer */
+@media(max-height:760px){#gate{padding-top:16px!important}#gate h2{font-size:22px}.roles button{min-height:64px;padding:12px 14px}.roles .ri{width:40px;height:40px}.recent{min-height:60px;padding:10px 14px}}
 #gate{background:var(--bg);align-items:flex-start;top:var(--hh);padding:24px 16px}
 #gate>.box{background:transparent;box-shadow:none;padding:8px 0;max-width:460px}
 #gate h2{font-size:26px;font-weight:800;color:var(--tx)}
@@ -368,7 +380,8 @@ body.locked #btnSwitch{display:none}
 /* entrada sin barra de desplazamiento interna */
 #gate{overflow:auto}
 #gate>.box{max-height:none;overflow:visible;margin:0 auto}
-@media(min-width:900px){#gate{padding-top:48px}}
+@media(min-width:900px){#gate{padding-top:24px;align-items:center}#gate>.box{margin:auto}}
+header .mark svg{width:32px;height:32px}
 .recent{display:flex;align-items:center;gap:14px;background:#FFFFFF;border:2px solid var(--az2);border-radius:8px;box-shadow:var(--sh);padding:14px 16px;min-height:72px;color:var(--tx);font-size:16px;margin-bottom:14px}
 .recent .ini{width:44px;height:44px;border-radius:50%;background:#2D3277;color:#FFE600;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none}
 .recent .rt{flex:1;display:flex;flex-direction:column;gap:2px}.recent .rt span{font-size:13px;color:var(--mu)}
@@ -376,6 +389,16 @@ body.locked #btnSwitch{display:none}
 .modal{z-index:90}
 :root[data-theme="dark"] .pkb{border-color:#3A3D66}:root[data-theme="dark"] .pkb:disabled{background:rgba(255,255,255,.04)}:root[data-theme="dark"] .pkp{box-shadow:0 6px 24px rgba(0,0,0,.6);border:1px solid #30335A}
 :root[data-theme="dark"] .recent{background:#1E2040!important;border-color:#4C8DFF}:root[data-theme="dark"] .roles .ri{background:rgba(255,255,255,.07)!important}:root[data-theme="dark"] .roles .ri svg{stroke:#8CB8FF}:root[data-theme="dark"] .pkv{background:rgba(0,0,0,.55)}
+
+/* apariencia: claro u oscuro, a elección */
+#btnTema{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.75);color:#2D3277;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+#btnTema:hover{background:#FFFFFF}body:not(.locked) #btnTema{display:none}#btnTema svg{width:20px;height:20px}
+#btnTema .sol{display:none}:root[data-theme="dark"] #btnTema .sol{display:block}:root[data-theme="dark"] #btnTema .luna{display:none}
+#navTema{border-top:1px solid var(--ln);margin-top:12px;padding:6px 4px 0}
+#navTema .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+#navTema .seg button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px}#navTema .seg svg{width:18px;height:18px}
+#navTema+#navCta{border-top:0;margin-top:4px}
+:root[data-theme="dark"] #navCta .btn{background:rgba(76,141,255,.18)!important;color:#8CB8FF!important}
 /* ===== Modo oscuro (lo activa el HUB con data-theme="dark"; suelto sigue al dispositivo). La barra amarilla se queda igual ===== */
 :root[data-theme="dark"]{--bg:#14152A;--card:#1E2040;--tx:#ECEDF7;--mu:#A9ABC4;--ln:#30335A;--az:#C9CCFF;--az2:#4C8DFF;--sh:none;color-scheme:dark}
 :root[data-theme="dark"] .b-tl{background:transparent;color:#C9CCFF;border-color:#5b62c9}
@@ -497,14 +520,14 @@ body.locked main,body.locked nav,body.locked #btnPin,body.locked #menuBtn{visibi
 
 <header>
   <button id="menuBtn" title="Menú" aria-label="Abrir menú"><svg viewBox="0 0 24 24" fill="none" stroke="#FFE600" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="dot hidden" id="menuDot"></span></button>
-  <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3.6 15.4a8.4 8.4 0 0 1 16.8 0z" fill="#FFE600"/><rect x="10.2" y="5.2" width="3.6" height="6.2" rx="1.2" fill="#FFE600"/><path d="M7.9 15V10.6M16.1 15V10.6" stroke="#2D3277" stroke-width="1.4" stroke-linecap="round"/><rect x="1.6" y="15.4" width="20.8" height="3.4" rx="1.7" fill="#FFE600"/></svg></div>
+  <div class="mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="21.5" y="4" width="2.4" height="20" rx=".8" fill="#FFE600"/><rect x="21.5" y="21.6" width="8.5" height="2.2" rx=".8" fill="#FFE600"/><path d="M6.5 8.5h6.2l3.3 7.2" stroke="#FFE600" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M7.5 8.5v6" stroke="#FFE600" stroke-width="2" stroke-linecap="round"/><path d="M3 15.2h17v7.3H3z" fill="#FFE600"/><path d="M3 15.2l2.2-2.4h3.2" stroke="#FFE600" stroke-width="2" stroke-linejoin="round"/><circle cx="7.5" cy="24.2" r="3.2" fill="#FFE600" stroke="#2D3277" stroke-width="1.4"/><circle cx="16.5" cy="24.2" r="3.2" fill="#FFE600" stroke="#2D3277" stroke-width="1.4"/><circle cx="7.5" cy="24.2" r="1.1" fill="#2D3277"/><circle cx="16.5" cy="24.2" r="1.1" fill="#2D3277"/></svg></div>
   <div>
     <div class="she">Safety Health Environment (SHE)</div>
     <h1>Horas vuelo · Montacarguistas</h1>
     <div class="sub" id="subSite"></div>
   </div>
   <div class="sp"></div>
-  <span class="pill">MXCD10</span>
+  <span class="pill">MXCD10</span><button id="btnTema" type="button" title="Cambiar a modo oscuro" aria-label="Cambiar entre modo claro y oscuro"><svg class="sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
   <span id="whoBadge" class="badge"></span>
   <button class="btn sec sm hidden" id="btnGuia">Guía</button>
   <button class="btn sec sm hidden" id="btnPin">Mi cuenta / PIN</button>
@@ -529,6 +552,7 @@ body.locked main,body.locked nav,body.locked #btnPin,body.locked #menuBtn{visibi
   <button data-t="reset" data-r="RESET" data-more="1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3"/></svg></i>Restablecer PIN</button>
   <button data-t="usuarios" data-r="ADMIN" data-more="1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></i>Usuarios</button>
   <button data-t="bitacora" data-r="ADMIN" data-more="1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 7h6M9 11h6"/></svg></i>Bitácora</button>
+<div id="navTema"><span class="navsep" style="padding-left:4px">Apariencia</span><div class="seg" id="temaSeg"><button type="button" data-v="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Claro</button><button type="button" data-v="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Oscuro</button></div></div>
 <div id="navCta"><span class="muted" id="navWho" style="font-size:13px;font-weight:700;padding:0 4px"></span><button class="btn sec" data-px="btnGuia">Guía por puesto</button><button class="btn sec" data-px="btnPin">Mi cuenta / PIN</button><button class="btn sec" data-px="btnSwitch">Cambiar usuario</button></div>
 </nav>
 
@@ -3512,6 +3536,8 @@ function bind() {
   $('#btnComo').onclick = abrirComo;
   $('#gGuia').onclick = () => abrirGuia(G.rol === 'SHE' ? 'SHE' : G.rol === 'SUP' ? 'SUP' : 'TL');
   $('#btnGuia').onclick = () => abrirGuia();
+  $('#btnTema').onclick = () => ponTema(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  $$('#temaSeg button').forEach(b => b.onclick = () => ponTema(b.dataset.v)); ponTema(document.documentElement.getAttribute('data-theme'));
   $$('#navCta [data-px]').forEach(x => x.onclick = () => { document.body.classList.remove('menu'); $('#' + x.dataset.px).click(); });
   $('#mGuia').onclick = e => { if (e.target.id === 'mGuia') $('#mGuia').classList.remove('show'); };
   $('#mComo').onclick = e => { if (e.target.id === 'mComo') $('#mComo').classList.remove('show'); };
@@ -3646,6 +3672,13 @@ window.addEventListener('resize', () => { if (innerWidth > 640) pickClose(); });
 setInterval(() => $$('select[data-pk]').forEach(x => x._pkSync && x._pkSync()), 250);   // refleja cambios hechos por código
 let PK_QUIETO = 0;
 document.addEventListener('scroll', e => { const p = $('#pkPanel'); if (p && Date.now() > PK_QUIETO && !p.contains(e.target) && innerWidth > 640) pickClose(); }, true);
+
+function ponTema(t) {
+  t = t === 'dark' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem('hv_tema', t); } catch (e) {}
+  $$('#temaSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === t));
+  const b = $('#btnTema'); if (b) b.title = t === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+}
 function altoHeader() { const h = document.querySelector('header'); if (h) document.documentElement.style.setProperty('--hh', h.offsetHeight + 'px'); }
 window.addEventListener('resize', altoHeader);
 try { new ResizeObserver(altoHeader).observe(document.querySelector('header')); } catch (e) {}
